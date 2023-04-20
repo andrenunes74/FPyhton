@@ -1,0 +1,13 @@
+"""FPYTHON
+
+a = [1,2,3,4]
+
+def len: 
+    [] = 0;
+    [a] = 1;
+    (h:t) = 1 + len(t);
+end
+
+"""
+
+print(f_len(a))
