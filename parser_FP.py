@@ -191,14 +191,14 @@ parser = yacc.yacc()
 fInput = sys.argv[1]
 fread = open(fInput, "r")
 input_str = fread.read()
+
 fOutput = sys.argv[2]
 fwrite = open(str(fOutput), "w")
 
-begin = input_str[:input_str.find("\"\"\"FPYTHON")]
-end = input_str[input_str.find("\"\"\"")+10:]
-end = end[end.find("\"\"\"")+3:]
-doit = input_str[input_str.find("\"\"\"FPYTHON"):input_str.rfind("\"\"\"")+3]
-result = begin + parser.parse(doit) + end
+pattern = r'"""FPYTHON[\s\S]*?"""'
+match = re.findall(pattern, input_str) 
+for x in match:
+    input_str = input_str.replace(x,parser.parse(x))
 
-fwrite.write(result)
+fwrite.write(input_str)
 fwrite.close()
