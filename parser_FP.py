@@ -11,27 +11,15 @@ precedence = (
 
 def p_program(p):
     """
-    program : init frases end
+    program : INIT frases END
     """
     p[0] = p[2]
-
-def p_init(p):
-    """
-    init : INIT
-    """
-    p[0] = ""
-
-def p_end(p):
-    """
-    end : END
-    """
-    p[0] = ""
 
 def p_comments(p):
     """
     comments : COMMENT conteudo
     """
-    p[0] = "#" + p[2] + "\n"
+    p[0] = f'#{p[2]}\n'
 
 def p_frases(p):
     """
@@ -54,7 +42,7 @@ def p_func(p):
     aux = 'f_' + aux[0:]
     aux = aux[:-1] + '(x)' + aux[-1:] + '\n'
 
-    p[0] = 'def ' + aux + p[2] + "\telse:\n\t\traise ValueError\n"
+    p[0] = f'def {aux}{p[2]}\telse:\n\t\traise ValueError\n'
 
 def p_insts(p):
     """
@@ -63,7 +51,6 @@ def p_insts(p):
     """
     p[0] = "".join(p[1:])
 
-##FALTAM CASOS AQUI
 def p_inst(p):
     """
     inst : INST exp EINST
@@ -74,35 +61,37 @@ def p_inst(p):
     arg = str(p[1]).replace(" ","").replace("=","")
     if p[2] == 'rec':
         if ':' in arg:
-            p[0] = "\tif len(x) >= 1:\nh = x[0]\nt = x[1:]\n" + p[2] +'\n'
+            p[0] = f'\tif len(x) >= 1:\nh = x[0]\nt = x[1:]\n {p[2]}\n'
         elif '[]' in arg:
-            p[0] = "\tif len(x) == 0:\n\t\treturn " + p[2] +'\n'
+            p[0] = f'\tif len(x) == 0:\n\t\treturn {p[2]}\n'
         else:
-            p[0] = "\tif x == "+ arg + ":\n\t\treturn " + p[2] +'\n'
+            p[0] = f'\tif x == {arg}:\n\t\treturn {p[2]}\n'
+
     elif p[2] == 'cond':
-        p[0] = "\tif x == "+ arg + ":\n\t\t" + p[2] +'\n'
+        p[0] = f'\tif x == {arg}:\n\t\t{p[2]}\n'
     elif '[' in arg and len(arg) == 3:
-        p[0] = "\tif len(x) == 1:\n\t\t"+arg[1]+" = x[0]"+"\n\t\treturn " + p[2] +'\n'
+        p[0] = f'\tif len(x) == 1:\n\t\t{arg[1]} = x[0]\n\t\treturn {p[2]}\n'
+        
     else:
         if ':' in arg:
-            p[0] = "\tif len(x) >= 1:\n\t\t"+arg[1]+" = x[0]\n\t\t"+arg[3]+" = x[1:]\n\t\treturn" + p[2] +'\n'
+            p[0] = f'\tif len(x) >= 1:\n\t\t{arg[1]} = x[0]\n\t\t{arg[3]} = x[1:]\n\t\treturn {p[2]}\n'
         elif '[]' in arg:
-            p[0] = "\tif len(x) == 0:\n\t\treturn " + p[2] +'\n'
+            p[0] = f'\tif len(x) == 0:\n\t\treturn {p[2]}\n'
         else:
-            p[0] = "\tif x == "+ arg + ":\n\t\t" + p[2]+'\n'
+            p[0] = f'\tif x == {arg}:\n\t\t{p[2]}\n'
 
 def p_rec(p):
     """
     rec : exp REC exp
     """
-    p[0] = p[1] + "\n\t\treturn " + p[3] + "\n"
+    p[0] = f'{p[1]}\n\t\treturn {p[3]}\n'
     
 def p_decl(p):
     """
     decl : exp DECL exp
          | exp DECL logic
     """
-    p[0] = p[1] + '=' + p[3] + "\n"
+    p[0] = f'{p[1]} = {p[3]}\n'
 
 def p_exp(p):
     """
@@ -114,7 +103,7 @@ def p_exp(p):
         | conteudo
     """
     if len(p) == 4:
-        p[0] = "(" + p[1] + str(p[2]) + p[3] + ")"
+        p[0] = f'({p[1]} {str(p[2])} {p[3]})'
     else:
         p[0] = p[1]
 
@@ -130,13 +119,13 @@ def p_logic(p):
           | NOT logic
     """
     if p[2] == '==' or p[2] == '<' or p[2] == '>' or p[2] == '>=' or p[2] == '<=':
-        p[0] = '(' + p[1] + str(p[2]) + p[3] + ')'
+        p[0] = f'({p[1]} {str(p[2])} {p[3]})'
     elif p[2] == '&&':
-        p[0] = '(' + p[1] +' and '+ p[3] + ')'
+        p[0] = f'({p[1]} and {p[3]})'
     elif p[2] == '||':
-        p[0] = '(' + p[1] +' or '+ p[3] + ')'
+        p[0] = f'({p[1]} or {p[3]})'
     elif p[1] == '!':
-        p[0] = '(' + 'not ' + p[2] + ')'
+        p[0] = f'(not {p[2]})'
     else:
         p[0] = p[1]
 
@@ -145,7 +134,7 @@ def p_cond(p):
     cond : IF logic THEN exp ELSE exp
     """
     print(p)
-    p[0] = 'if '+p[2]+':\n\t\t\treturn '+p[4]+ "\n\t\telse"+':\n\t\t\treturn '+p[6]
+    p[0] = f'if {p[2]}:\n\t\t\treturn {p[4]}\n\t\telse:\n\t\t\treturn {p[6]}'
 
 def p_conteudo(p):
     """
@@ -163,7 +152,7 @@ def p_call(p):
     """
     call : ID LP exp RP
     """
-    p[0] = 'f_'+str(p[1]) + '(' +str(p[3]) +')'
+    p[0] = f'f_{str(p[1])} ({str(p[3])})'
 
 def p_lista(p):
     'lista : LISTA'
@@ -183,7 +172,7 @@ def p_lista(p):
         for x in merda:
             condicoes+=' if '+ x.replace(" ","")
 
-        resultado = '['+instrucao+' for '+var+" in range("+dominio[0]+','+dominio[1]+")"+condicoes+']'
+        resultado = f'[{instrucao} for {var} in range({dominio[0]},{dominio[1]}){condicoes}]'
         p[0] = resultado
 
     else: p[0] = p[1]
@@ -199,34 +188,17 @@ def p_error(p):
 
 parser = yacc.yacc()
 
+fInput = sys.argv[1]
+fread = open(fInput, "r")
+input_str = fread.read()
+fOutput = sys.argv[2]
+fwrite = open(str(fOutput), "w")
 
-#UI
+begin = input_str[:input_str.find("\"\"\"FPYTHON")]
+end = input_str[input_str.find("\"\"\"")+10:]
+end = end[end.find("\"\"\"")+3:]
+doit = input_str[input_str.find("\"\"\"FPYTHON"):input_str.rfind("\"\"\"")+3]
+result = begin + parser.parse(doit) + end
 
-print("                                          ")
-print(" _____ ______   _______ _   _  ___  _   _ ")
-print("|  ___|  _ \ \ / /_   _| | | |/ _ \| \ | |")
-print("| |_  | |_) \ V /  | | | |_| | | | |  \| |")
-print("|  _| |  __/ | |   | | |  _  | |_| | |\  |")
-print("|_|   |_|    |_|   |_| |_| |_|\___/|_| \_|")
-print("                                          ")
-
-try:
-    fInput = input("Insert the name of the input file: ")
-    fread = open(fInput, "r")
-except OSError:
-        print("[ERROR] File not found!")
-        sys.exit()
-with fread: 
-    input_str = fread.read()
-    fOutput = input("Insert the name of the output file: ")
-    fwrite = open(str(fOutput), "w")
-
-    begin = input_str[:input_str.find("\"\"\"FPYTHON")]
-    end = input_str[input_str.find("\"\"\"")+10:]
-    end = end[end.find("\"\"\"")+3:]
-    doit = input_str[input_str.find("\"\"\"FPYTHON"):input_str.rfind("\"\"\"")+3]
-
-    result = begin + parser.parse(doit) + end
-
-    fwrite.write(result)
-    fwrite.close()
+fwrite.write(result)
+fwrite.close()

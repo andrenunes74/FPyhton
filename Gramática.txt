@@ -1,0 +1,57 @@
+program : INIT frases END
+
+comments : COMMENT conteudo
+
+frases : comments
+       | decl
+       | cond
+       | func
+       | frases func
+       | frases cond
+       | frases comments
+       | frases decl
+
+func : DEF insts EDEF
+
+insts : inst
+      | insts inst
+
+inst : INST exp EINST
+     | INST logic EINST
+     | INST cond EINST
+     | INST rec EINST
+
+rec : exp REC exp
+
+decl : exp DECL exp
+     | exp DECL logic
+
+exp : exp PLUS exp
+    | exp MINUS exp
+    | exp TIMES exp
+    | exp DIVIDE exp
+    | exp MOD exp
+    | conteudo
+
+logic : exp EQ exp
+      | exp GT exp
+      | exp LT exp
+      | exp GTE exp
+      | exp LTE exp
+      | exp AND exp
+      | exp OR exp
+      | NOT logic
+
+cond : IF logic THEN exp ELSE exp
+
+conteudo : NUM
+         | STRING
+         | ID
+         | BOOL
+         | TUPLE
+         | lista
+         | call
+
+call : ID LP exp RP
+
+lista : LISTA

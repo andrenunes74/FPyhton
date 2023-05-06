@@ -1,9 +1,9 @@
 # FPython
-Parser developed in the Language Processing course
+Python functional extension parser developed in the Language Processing course
 
 ## How to run:
 
-* Run the command and follow the instructions:
-```pyhton
-python3 parser_FP.py
+* Run the command:
+```bash
+python3 parser_FP.py <input-file> <output-file>
 ```
